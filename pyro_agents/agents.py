@@ -65,15 +65,14 @@ class Agent():
         )
         return S
 
-    def action_model(self, state, time_left):
-        uid = str(uuid.uuid4())
+    def action_model(self, expected_utility_func, state, time_left, uid=str(uuid.uuid4())):
         print('action model call: {}'.format(uid))
         print('time left: ' + str(time_left))
         action = pyro.sample(
             'action_{}'.format(uid),
             dist.Categorical(torch.ones(3))
         )
-        eu_val = self.expected_utility(
+        eu_val = expected_utility_func(
             state,
             action,
             time_left
@@ -84,6 +83,7 @@ class Agent():
 
     def infer_actions(self, state, time_left):
         action_posterior = Importance(self.action_model, num_samples=1000).run(
+            self.expected_utility,
             state,
             time_left
         )
