@@ -104,7 +104,7 @@ class Agent():
         print('expected_utility call')
         print('time left: ' + str(time_left))
         u = self.utility(state)
-        new_time_left = time_left - 1
+        new_time_left = max(time_left - 1, torch.tensor(0.))
 
         if new_time_left == 0:
             return u

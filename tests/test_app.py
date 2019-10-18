@@ -29,6 +29,13 @@ class TestAgent(unittest.TestCase):
         actual_logmass = next(posterior._traces())[1]
         self.assertEqual(actual_logmass, expected_logmass)
 
+    def test_action_model(self):
+        agent = Agent()
+        state = torch.tensor(1.0)
+        time_left = torch.tensor(0.0)
+        action = agent.action_model(state, time_left)
+        # work in progress
+
 
 if __name__ == '__main__':
     unittest.main()
