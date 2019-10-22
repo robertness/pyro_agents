@@ -21,6 +21,14 @@ class TestAgent(unittest.TestCase):
             torch.tensor(4.)
         )
         print(action_dist)
+        
+    def test_mini_example(self):  # smaller example -> recursion finishes
+        agent = Agent()
+        action_dist = agent.infer_actions(
+            torch.tensor(0.),
+            torch.tensor(2.)  # reduced for speed (runs in ~ 0.79 s)
+        )
+        print(action_dist)
 
     def test_add_factor(self):
         expected_logmass = torch.tensor(-1.0)
