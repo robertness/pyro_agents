@@ -29,6 +29,12 @@ class TestAgent(unittest.TestCase):
             torch.tensor(2.)  # reduced for speed (runs in ~ 0.79 s)
         )
         print(action_dist)
+        
+    def test_simulate(self):  # smaller example
+        agent = Agent()
+        start_state = torch.tensor(0.)
+        total_time = torch.tensor(2.)
+        print('Agent trajectory:', agent.simulate(start_state, total_time))
 
     def test_add_factor(self):
         expected_logmass = torch.tensor(-1.0)
