@@ -189,3 +189,26 @@ class Agent():
             time_left
         )
         return exp_utility
+    
+    def simulate(self, state, time_left):
+        """
+        Updates and stores the world state 
+        in response to the agent’s actions.
+        Input: current state and time left
+        Output: trajectory of states
+        """
+        if torch.eq(time_left, torch.tensor(0.)):
+            return torch.Tensor()
+        else:
+            uid = str(uuid.uuid4())
+            
+            actions, action_probs = self.infer_actions(state, time_left)
+            current_action_idx = pyro.sample(
+                'next_action_idx{}'.format(uid),
+                dist.Categorical(action_probs)
+            )
+            current_action = actions[current_action_idx]
+            next_state = self.transition(state, current_action)
+            
+            return torch.cat((state.unsqueeze(0),
+                              self.simulate(next_state, time_left-1)))    
