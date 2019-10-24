@@ -6,14 +6,14 @@ import pyro.distributions as dist
 import uuid
 
 
-def add_factor(val, name_):
+def add_factor(val, name_, alpha = 100):
     """
     Adds factor value to the unnormalized log-prob
     of the model sampling, to maximize soft max.
     """
     pyro.sample(
         name_,
-        dist.Delta(val, log_density=val),
+        dist.Delta(val, log_density=alpha*val),
         obs=val
     )
 
@@ -108,8 +108,7 @@ class Agent():
             action,
             time_left
         )
-        alpha = 10
-        add_factor(alpha * eu_val, 'exp_util_{}'.format(uid)) #### Q: Does adding factor here REALLY do anything?
+        add_factor(eu_val, 'exp_util_{}'.format(uid)) #### Q: Does adding factor here REALLY do anything?
         return action 
 
     def infer_actions(self, state, time_left):
