@@ -1,13 +1,9 @@
 import pyro
 from pyro.infer import Importance
 import torch
-
-
 from pyro_agents.agents import add_factor
 from pyro_agents.agents import Agent
-
 import unittest
-
 
 class TestAgent(unittest.TestCase):
     def setUp(self):
@@ -15,6 +11,9 @@ class TestAgent(unittest.TestCase):
 
     @unittest.skip("Getting infinite recursion")
     def test_smoke(self):
+        """
+        Test Agent class allowing time_left to be 4
+        """
         agent = Agent()
         action_dist = agent.infer_actions(
             torch.tensor(0.),
@@ -23,6 +22,10 @@ class TestAgent(unittest.TestCase):
         print(action_dist)
         
     def test_mini_example(self):  # smaller example -> recursion finishes
+        """
+        Test to see if the Agent class works 
+        Small scale: time_left is 2
+        """
         agent = Agent()
         action_dist = agent.infer_actions(
             torch.tensor(0.),
@@ -31,50 +34,78 @@ class TestAgent(unittest.TestCase):
         print(action_dist)
         
     def test_simulate(self):  # smaller example
+        """
+        Mini test to see if simulate outputs a trajectory
+        Small scale: time_left is 2
+        """
         agent = Agent()
         start_state = torch.tensor(0.)
         total_time = torch.tensor(2.)
         print('Agent trajectory:', agent.simulate(start_state, total_time))
 
     def test_add_factor(self):
-        expected_logmass = torch.tensor(-1.0)
-
+        """
+        Testing output of add_factor() function
+        """
+        expected_logmass = torch.tensor(-100.0)
+        val = torch.tensor(-1.0) 
         def model():
-            add_factor(expected_logmass, 'test')
+            add_factor(val, 'exp_util_test')  # alpha is 100.0
         posterior = Importance(model, num_samples=1).run()
         actual_logmass = next(posterior._traces())[1]
         self.assertEqual(actual_logmass, expected_logmass)
 
     def test_action_model_add_logmass(self):
+        """
+        Test to see if add_factor() changes logmass
+        to desired output with Importance sampling
+        """
         agent = Agent()
         state = torch.tensor(1.0)
         time_left = torch.tensor(0.0)
         dummy_utility = torch.tensor(1.0)
+        
+        # Create dummy utility function
         def dummy_utility_func(state, action, time_left):
             return dummy_utility
-
+        # Set expected utility to the dummy function
+        agent.expected_utility = dummy_utility_func
+        
         posterior = Importance(
             agent.action_model,
             num_samples=1
-        ).run(dummy_utility_func, state, time_left)
-        actual_logmass = next(posterior._traces())[1]
+        ).run(state, time_left)
+        
+        actual_logmass = next(posterior._traces(state, time_left))[1]
         expected_logmass = 100 * dummy_utility
         self.assertEqual(actual_logmass, expected_logmass)
 
     def test_action_model_output(self):
+        """
+        Test to see if action_model()
+        has desired output
+        """
         agent = Agent()
         state = torch.tensor(1.0)
         time_left = torch.tensor(0.0)
         dummy_utility = torch.tensor(1.0)
+        
+        # Create dummy utility function
         def dummy_utility_func(state, action, time_left):
             return dummy_utility
+        
+        # Set expected utility to the dummy function
+        agent.expected_utility = dummy_utility_func
+        
         expected_action = torch.tensor(0.0)
+        
         actual_action = pyro.condition(
             agent.action_model,
             {'action_test': expected_action}
-        )(dummy_utility_func, state, time_left, uid="test")
+        )(state, time_left,testing_mode = True)
+
         self.assertEqual(actual_action, expected_action)
 
-
+        
 if __name__ == '__main__':
     unittest.main()
