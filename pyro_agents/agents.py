@@ -3,8 +3,6 @@ import numpy as np
 import pyro
 from pyro.infer import EmpiricalMarginal, Importance
 import pyro.distributions as dist
-import uuid
-
 
 def add_factor(val, name_, alpha = 100):
     """
@@ -31,7 +29,7 @@ def expectation(vals, probs):
     return ave
 
 
-def get_samples(posterior, n_samples=10):
+def get_samples(posterior, n_samples=10, possible_vals = np.array([0,1,2])):
     """
     Sample from a posterior.
     Input: - Pyro posterior distribution
@@ -39,12 +37,20 @@ def get_samples(posterior, n_samples=10):
     Output:- Values of the samples
            - Prob. of each sample occuring in n_samples
     """
+    # initialize
+    vals = possible_vals
+    counts = np.zeros(possible_vals.shape)
+    
     marginal_dist = EmpiricalMarginal(posterior).sample(
         (n_samples,1)
     )
-    vals, counts = np.unique(marginal_dist, return_counts=True)
+    # count
+    for i in range(len(possible_vals)):
+        counts[i] = np.count_nonzero(marginal_dist == vals[i])
+        
     vals = torch.from_numpy(vals).type(dtype=torch.float)
     probs = torch.from_numpy(counts).type(dtype=torch.float)/n_samples
+    
     return vals, probs
 
 
@@ -86,7 +92,7 @@ class Agent():
         )
         return S
 
-    def action_model(self, state, time_left):
+    def action_model(self, state, time_left, testing_mode = False):
         """
         Samples actions based that maximize softmax
         of extected utility. 
@@ -98,17 +104,23 @@ class Agent():
         expectation of sampled actions in that state
         Pyro states: action, expected utility
         """
-        uid = str(uuid.uuid4())
-        action = pyro.sample(
-            'action_{}'.format(uid),
+        if testing_mode == False:
+            _name = '_state{}_timeleft{}'.format(state, time_left)
+        else:  # For testing, use the same state name
+            _name = '_test' 
+        
+        action = pyro.sample(  
+            'action'+_name,
             dist.Categorical(torch.ones(3))
         )
+        
         eu_val = self.expected_utility(
             state,
             action,
             time_left
         )
-        add_factor(eu_val, 'exp_util_{}'.format(uid)) #### Q: Does adding factor here REALLY do anything?
+        add_factor(eu_val, 'exp_util'+_name)
+        
         return action 
 
     def infer_actions(self, state, time_left):
@@ -175,13 +187,14 @@ class Agent():
         reached or when time runs out (in expected_utility())
 
         """
-        uid = str(uuid.uuid4())
         next_state = self.transition(state, action)
         actions, action_probs = self.infer_actions(next_state, time_left)
+        
         next_action_idx = pyro.sample(
-            'next_action_idx{}'.format(uid),
+            'next_action_state{}_timeleft{}'.format(state, time_left),
             dist.Categorical(action_probs)
         )
+
         next_action = actions[next_action_idx]
         exp_utility = self.expected_utility(
             next_state,
@@ -200,11 +213,9 @@ class Agent():
         if torch.eq(time_left, torch.tensor(0.)):
             return torch.Tensor()
         else:
-            uid = str(uuid.uuid4())
-            
             actions, action_probs = self.infer_actions(state, time_left)
             current_action_idx = pyro.sample(
-                'next_action_idx{}'.format(uid),
+                'next_action_idx_state{}_timeleft{}'.format(state, time_left),
                 dist.Categorical(action_probs)
             )
             current_action = actions[current_action_idx]
