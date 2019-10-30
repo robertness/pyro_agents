@@ -9,7 +9,7 @@ class TestAgent(unittest.TestCase):
     def setUp(self):
         self.agent = Agent()
 
-    @unittest.skip("Getting infinite recursion")
+    @unittest.skip("Takes longer time")
     def test_smoke(self):
         """
         Test Agent class allowing time_left to be 4
@@ -21,27 +21,27 @@ class TestAgent(unittest.TestCase):
         )
         print(action_dist)
         
-    def test_mini_example(self):  # smaller example -> recursion finishes
+    def test_mini_example(self):  # smaller example 
         """
         Test to see if the Agent class works 
-        Small scale: time_left is 2
+        Small scale: time_left is 3
         """
         agent = Agent()
         action_dist = agent.infer_actions(
             torch.tensor(0.),
-            torch.tensor(2.)  # reduced for speed (runs in ~ 0.79 s)
+            torch.tensor(3.)  
         )
         print(action_dist)
         
     def test_simulate(self):  # smaller example
         """
         Mini test to see if simulate outputs a trajectory
-        Small scale: time_left is 2
+        Small scale: time_left is 3
         """
         agent = Agent()
         start_state = torch.tensor(0.)
-        total_time = torch.tensor(2.)
-        print('Agent trajectory:', agent.simulate(start_state, total_time))
+        total_time = torch.tensor(3.)
+        print('Agent state trajectory:', agent.simulate(start_state, total_time))
 
     def test_add_factor(self):
         """
