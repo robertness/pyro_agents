@@ -9,7 +9,6 @@ class TestAgent(unittest.TestCase):
     def setUp(self):
         self.agent = Agent()
 
-    @unittest.skip("Takes longer time")
     def test_smoke(self):
         """
         Test Agent class allowing time_left to be 4
@@ -19,35 +18,18 @@ class TestAgent(unittest.TestCase):
             torch.tensor(0.),
             torch.tensor(4.)
         )
-        print('Action vals and probs:',
-              action_dist,
-             'Expected probs: tensor([0.,0.,1.])')
+        print('Agent action possible vals: ',action_dist[0].data,
+              '; with prob distribution: ',action_dist[1].data)
         
-    def test_mini_example(self):  # smaller example 
+    def test_simulate_fct(self): 
         """
-        Test to see if the Agent class works 
-        Small scale: time_left is 3
-        """
-        agent = Agent()
-        action_dist = agent.infer_actions(
-            torch.tensor(0.),
-            torch.tensor(3.)  
-        )
-        print('Action vals and probs:',
-              action_dist,
-             'Expected probs: tensor([0.,0.,1.])')
-        
-    def test_simulate(self):  # smaller example
-        """
-        Mini test to see if simulate outputs a trajectory
-        Small scale: time_left is 3
+        Test to see if simulate() outputs correct trajectory
+        Small scale: time_left is 4
         """
         agent = Agent()
         start_state = torch.tensor(0.)
-        total_time = torch.tensor(3.)
-        print('Agent state trajectory:', 
-              agent.simulate(start_state, total_time),
-             'Expected trajectory: tensor([0.,1.,2.])')
+        total_time = torch.tensor(4.)
+        print('Agent state trajectory:', agent.simulate(start_state, total_time).data)
 
     def test_add_factor(self):
         """
