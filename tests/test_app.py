@@ -19,7 +19,9 @@ class TestAgent(unittest.TestCase):
             torch.tensor(0.),
             torch.tensor(4.)
         )
-        print(action_dist)
+        print('Action vals and probs:',
+              action_dist,
+             'Expected probs: tensor([0.,0.,1.])')
         
     def test_mini_example(self):  # smaller example 
         """
@@ -31,7 +33,9 @@ class TestAgent(unittest.TestCase):
             torch.tensor(0.),
             torch.tensor(3.)  
         )
-        print(action_dist)
+        print('Action vals and probs:',
+              action_dist,
+             'Expected probs: tensor([0.,0.,1.])')
         
     def test_simulate(self):  # smaller example
         """
@@ -41,7 +45,9 @@ class TestAgent(unittest.TestCase):
         agent = Agent()
         start_state = torch.tensor(0.)
         total_time = torch.tensor(3.)
-        print('Agent state trajectory:', agent.simulate(start_state, total_time))
+        print('Agent state trajectory:', 
+              agent.simulate(start_state, total_time),
+             'Expected trajectory: tensor([0.,1.,2.])')
 
     def test_add_factor(self):
         """
