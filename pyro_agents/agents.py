@@ -3,6 +3,7 @@ import numpy as np
 import pyro
 from pyro.infer import EmpiricalMarginal, Importance
 import pyro.distributions as dist
+import uuid 
 
 def add_factor(val, name_, alpha = 100):
     """
@@ -30,11 +31,12 @@ def expectation(vals, probs):
     return ave
 
 
-def infer_probs(posterior, possible_vals = torch.tensor([0.,1.,2.]), n_samples=100):
+def infer_probs(posterior, possible_vals, n_samples=10):
     """
     Sample from a posterior and calculate probabilities of each value.
     Input: - Pyro posterior distribution
            - n_samples
+           - possible vals (for actions: 0,1,2; for utility: 0,1)
     Output:- Values of the samples
            - Prob. of each sample occuring in n_samples
     """
@@ -60,7 +62,7 @@ class Agent():
     Agent class.
     """
     
-    def utility(self, state, desired_state = torch.tensor(2.)):
+    def utility(self, state, desired_state = torch.tensor(3.)):
         """
         Returns utility value.
         Per the problem statement:
@@ -87,8 +89,9 @@ class Agent():
             s = state.add(action)
             return s
         
+        uid = str(uuid.uuid4()) 
         S = pyro.sample(
-            'next_state',
+            'next_state_{}'.format(uid), # uid for unique names
             dist.Delta(add_state_action(state, action_index))
         )
         return S
@@ -124,16 +127,17 @@ class Agent():
         
         return action 
 
-    def infer_actions(self, state, time_left, n_samples = 100):
+    def infer_actions(self, state, time_left, n_samples = 10):
         """
         Infers the probability of each action maximizing utility
         Input: - current state
                - time left
         Output:- values and probabilities of each action maximizing utility
         """
-        action_param_name = 'actions_values_at_state_{}'.format(state)
+        action_param_name = 'actions_values_at_state_{}_time{}'.format(state.int(), time_left.int())
         
-        if action_param_name in list(pyro.get_param_store().keys()): # already computed:
+        # already computed:
+        if action_param_name in list(pyro.get_param_store().keys()):
             action_param = pyro.get_param_store().get_param(action_param_name)
             vals = action_param[0]
             probs = action_param[1]
@@ -144,7 +148,7 @@ class Agent():
                 state,
                 time_left
             )
-            vals, probs = infer_probs(action_posterior)
+            vals, probs = infer_probs(action_posterior, possible_vals = torch.tensor([0.,1.,2.]))
             # Save for later
             action_param = pyro.param(action_param_name,
                                     torch.cat((vals.unsqueeze(0), 
@@ -153,28 +157,30 @@ class Agent():
                                    )
             return vals, probs
 
-    def infer_utility(self, state, action, time_left, n_samples = 100):
+    def infer_utility(self, state, action, time_left, n_samples = 10):
         """
         Infers value and probability of utility.
         Input: - current state, action, time_left
         Output:- values and probabilities each utility being 1
         Calls: utility_model()
         """    
-        util_param_name = 'util_values_at_state_{}_action{}'.format(state,action) 
+        # Get param name:
+        util_param_name = 'util_state{}_action{}_time{}'.format(state.int(), action.int(), time_left.int()) 
         
-        if util_param_name in list(pyro.get_param_store().keys()): # if already computed:
+        # if already computed:
+        if util_param_name in list(pyro.get_param_store().keys()): 
             util_param = pyro.get_param_store().get_param(util_param_name)
             vals = util_param[0]
             probs = util_param[1]
             return vals, probs
-            
-        else: # need to compute:   
+           
+        else: # else need to compute:  
             utility_posterior = Importance(
                 self.utility_model,
                 num_samples = n_samples
             ).run(state, action, time_left)
             
-            vals, probs = infer_probs(utility_posterior)
+            vals, probs = infer_probs(utility_posterior, possible_vals = torch.tensor([0.,1.]))
 
             # Save util_param for later
             util_param = pyro.param(util_param_name,
