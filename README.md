@@ -7,9 +7,9 @@ Agent models and decision theory implemented with Pyro.
 .
 ├── causal_agents               # Directory for Pyro implementation of causal agents, based on this semester's research
 │   ├── causal_agents           
-│   │   ├── agents.py           # script for causal agent class
-│   │   ├── environments.py     # script for environments class
-│   │   ├── utils.py            # script for environments class
+│   │   ├── agents.py           # script with causal agent class
+│   │   ├── environments.py     # script with environments class
+│   │   ├── utils.py            # script with helper functions 
 │   │   └── __init__.py         
 │   └── tests                   # causal agent tests folder
 │       ├── test_app.py         # script with unittests for causal agent
