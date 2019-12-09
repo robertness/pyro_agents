@@ -16,8 +16,12 @@ pip install . -r requirements.txt
 
 ## Running the unit tests
 
-Run
+Go to desired folder:
+```
+cd causal_agents
+```
 
+and run
 ```
 python -m unittest
 ```
