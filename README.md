@@ -5,24 +5,24 @@ Agent models and decision theory implemented with Pyro.
 
 ```
 .
-©À©¤©¤ causal_agents               # Directory for Pyro implementation of causal agents, based on this semester's research
-©¦   ©À©¤©¤ causal_agents           
-©¦   ©¦   ©À©¤©¤ agents.py           # script for causal agent class
-©¦   ©¦   ©À©¤©¤ environments.py     # script for environments class
-©¦   ©¦   ©À©¤©¤ utils.py            # script for environments class
-©¦   ©¦   ©¸©¤©¤ __init__.py         
-©¦   ©¸©¤©¤ tests                   # causal agent tests folder
-©¦       ©À©¤©¤ test_app.py         # script with unittests for causal agent
-©¦       ©¸©¤©¤ __init__.py         
-©¦
-©¸©¤©¤tutorial_agents             # Directory for Pyro implementation of tutorial agents (non-causal), using agentmodels.org structure
-    ©À©¤©¤ tutorial_agents         
-    ©¦   ©À©¤©¤ agents.py           # script for tutorial agents (includes environment)
-    ©¦   ©À©¤©¤ Agent_Flowchart.pdf # flowchart showing structure of agent.py script
-    ©¦   ©¸©¤©¤ __init__.py         
-    ©¸©¤©¤ tests                   # tutorial agent tests folder
-        ©À©¤©¤ test_app.py         # script with unittests for tutorial agent
-        ©¸©¤©¤ __init__.py        
+â”œâ”€â”€ causal_agents               # Directory for Pyro implementation of causal agents, based on this semester's research
+â”‚   â”œâ”€â”€ causal_agents           
+â”‚   â”‚   â”œâ”€â”€ agents.py           # script for causal agent class
+â”‚   â”‚   â”œâ”€â”€ environments.py     # script for environments class
+â”‚   â”‚   â”œâ”€â”€ utils.py            # script for environments class
+â”‚   â”‚   â””â”€â”€ __init__.py         
+â”‚   â””â”€â”€ tests                   # causal agent tests folder
+â”‚       â”œâ”€â”€ test_app.py         # script with unittests for causal agent
+â”‚       â””â”€â”€ __init__.py         
+â”‚
+â””â”€â”€tutorial_agents             # Directory for Pyro implementation of tutorial agents (non-causal), using agentmodels.org structure
+    â”œâ”€â”€ tutorial_agents         
+    â”‚   â”œâ”€â”€ agents.py           # script for tutorial agents (includes environment)
+    â”‚   â”œâ”€â”€ Agent_Flowchart.pdf # flowchart showing structure of agent.py script
+    â”‚   â””â”€â”€ __init__.py         
+    â””â”€â”€ tests                   # tutorial agent tests folder
+        â”œâ”€â”€ test_app.py         # script with unittests for tutorial agent
+        â””â”€â”€ __init__.py        
 ```
 
 ## Installing
