@@ -1,6 +1,30 @@
 # pyro agents
 Agent models and decision theory implemented with Pyro. 
 
+## Directory Structure
+
+```
+.
++-- causal_agents               # Directory for Pyro implementation of causal agents, based on this semester's research
+¦   +-- causal_agents           
+¦   ¦   +-- agents.py           # script for causal agent class
+¦   ¦   +-- environments.py     # script for environments class
+¦   ¦   +-- utils.py            # script for environments class
+¦   ¦   +-- __init__.py         
+¦   +-- tests                   # causal agent tests folder
+¦       +-- test_app.py         # script with unittests for causal agent
+¦       +-- __init__.py         
+¦
++-- tutorial_agents             # Directory for Pyro implementation of tutorial agents (non-causal), using agentmodels.org structure
+    +-- tutorial_agents         
+    ¦   +-- agents.py           # script for tutorial agents (includes environment)
+    ¦   +-- Agent_Flowchart.pdf # flowchart showing structure of agent.py script
+    ¦   +-- __init__.py         
+    +-- tests                   # tutorial agent tests folder
+        +-- test_app.py         # script with unittests for tutorial agent
+        +-- __init__.py        
+```
+
 ## Installing
 
 Python 3.6 or later is required. If using MacOSX, we suggest using [pyenv](https://github.com/pyenv/pyenv) instead of the native OSX python. I assume you are using a virtual environment called .env.
