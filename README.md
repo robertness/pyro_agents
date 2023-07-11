@@ -1,6 +1,10 @@
 # pyro agents
 Agent models and decision theory implemented with Pyro. 
 
+# Findings & Write-up:
+
+"A Causal Approach to Modeling Rational Agents", here: https://github.com/robertness/pyro_agents/blob/master/A%20causal%20approach%20to%20modeling%20rational%20agents.pdf
+
 ## Directory Structure
 
 ```
